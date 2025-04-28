@@ -1,0 +1,29 @@
+<!-- comment.html -->
+<div class="container my-5">
+    <h2 class="mb-4">留言板</h2>
+
+    <!-- 新增留言表單 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="commentForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">你的名字</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">留言內容</label>
+                    <textarea class="form-control" id="content" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">送出留言</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 留言顯示區 -->
+    <div id="commentsList">
+        <!-- 每則留言與回覆由JavaScript動態產生 -->
+    </div>
+</div>
+
+<!-- 連接你的留言板邏輯 -->
+<script src="comment.js"></script>
