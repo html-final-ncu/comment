@@ -1,29 +1,31 @@
 // comment.js
-// 宣告全域留言資料
 let comments = JSON.parse(localStorage.getItem('comments')) || [];
 
-// 時間格式化
 function formatTime() {
     const now = new Date();
     return now.getFullYear() + '/' + 
-        (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
-        now.getDate().toString().padStart(2, '0') + ' ' +
-        now.getHours().toString().padStart(2, '0') + ':' +
-        now.getMinutes().toString().padStart(2, '0');
+           (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
+           now.getDate().toString().padStart(2, '0') + ' ' +
+           now.getHours().toString().padStart(2, '0') + ':' +
+           now.getMinutes().toString().padStart(2, '0');
 }
 
-// 渲染留言
 function renderComments() {
     const commentsList = document.getElementById('commentsList');
     commentsList.innerHTML = '';
 
     comments.forEach((comment, index) => {
         let repliesHTML = '';
-        comment.replies.forEach(reply => {
+        comment.replies.forEach((reply, replyIndex) => {
             repliesHTML += `
                 <div class="card mt-2 ms-4">
                     <div class="card-body p-2">
-                        <h6 class="card-subtitle mb-1 text-muted">${reply.username} - ${reply.time}</h6>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="card-subtitle mb-1 text-muted">${reply.username} - ${reply.time}</h6>
+                            <button class="btn btn-outline-primary btn-sm like-reply-button" data-index="${index}" data-reply-index="${replyIndex}">
+                                <i class="fa fa-thumbs-up"></i> <span class="reply-like-count">${reply.likes}</span> 讚
+                            </button>
+                        </div>
                         <p class="card-text">${reply.content}</p>
                     </div>
                 </div>
@@ -64,7 +66,6 @@ function renderComments() {
     });
 }
 
-// 儲存到LocalStorage
 function saveComments() {
     localStorage.setItem('comments', JSON.stringify(comments));
 }
@@ -89,11 +90,12 @@ document.getElementById('commentForm').addEventListener('submit', function(e) {
     }
 });
 
-// 事件代理：處理按讚、展開回覆框、提交回覆
+// 處理按讚、展開回覆框、提交回覆、回覆按讚
 document.getElementById('commentsList').addEventListener('click', function(e) {
     const likeBtn = e.target.closest('.like-button');
     const replyBtn = e.target.closest('.reply-button');
     const submitReplyBtn = e.target.closest('.submit-reply');
+    const likeReplyBtn = e.target.closest('.like-reply-button');
 
     if (likeBtn) {
         const index = likeBtn.getAttribute('data-index');
@@ -118,11 +120,20 @@ document.getElementById('commentsList').addEventListener('click', function(e) {
             comments[index].replies.push({
                 username: replyUsername,
                 content: replyContent,
-                time: formatTime()
+                time: formatTime(),
+                likes: 0  // ← 新增回覆時，初始化讚數為0
             });
             saveComments();
             renderComments();
         }
+    }
+
+    if (likeReplyBtn) {
+        const index = likeReplyBtn.getAttribute('data-index');
+        const replyIndex = likeReplyBtn.getAttribute('data-reply-index');
+        comments[index].replies[replyIndex].likes++;
+        saveComments();
+        renderComments();
     }
 });
 
